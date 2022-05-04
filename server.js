@@ -58,7 +58,7 @@ app.use((error, req, res, next) => {
 
 // Difine simple route.
 app.get("/", (req, res) => {
-    res.status(200).send('Welcome to Bulff City App backend..');
+    res.status(200).send('Welcome to Winner-Yoga webapp backend..');
 });
 
 // Define models and it's relationship.
