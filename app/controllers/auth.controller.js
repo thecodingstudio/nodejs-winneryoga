@@ -97,7 +97,7 @@ exports.Login = async (req, res, next) => {
 
   // Check whether user is already exist or not.
   if (!user) {
-    return res.status(400).json({ message: 'User not exist!', status: 0 })
+    return res.status(400).json({ message: 'O bhai pela register to ker!', status: 0 })
   }
 
   var options = {
