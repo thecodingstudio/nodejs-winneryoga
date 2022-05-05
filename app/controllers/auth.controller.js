@@ -97,9 +97,7 @@ exports.Login = async (req, res, next) => {
 
   // Check whether user is already exist or not.
   if (!user) {
-    const error = new Error('O bhai pahele register to ker!');
-    error.statusCode = 404;
-    throw error;
+    return res.status(400).json({ message: 'User not exist!', status: 0 })
   }
 
   var options = {
@@ -209,7 +207,7 @@ exports.Login = async (req, res, next) => {
   }
   catch (err) {
     console.log(err)
-    const error = new Error('O bhai password to sahi daal!');
+    const error = new Error('Login failed!');
     error.statusCode = 422;
     throw error;
   }
