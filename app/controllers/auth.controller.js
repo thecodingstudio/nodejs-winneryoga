@@ -97,7 +97,7 @@ exports.Login = async (req, res, next) => {
 
   // Check whether user is already exist or not.
   if (!user) {
-    return res.status(400).json({ message: 'O bhai pela register to ker!', status: 0 })
+    return res.status(400).json({ message: 'User not exist!', status: 0 })
   }
 
   var options = {
@@ -160,6 +160,14 @@ exports.Login = async (req, res, next) => {
               expires_in: json_body.expires_in,
               token_type: json_body.token_type,
               login_count: token.access_count,
+              user: {
+                id: user.id,
+                name: user.name,
+                email: user.email,
+                country_code: user.country_code,
+                phone: user.phone,
+                picture: user.picture
+              },
               status: 1
             });
 
@@ -194,6 +202,14 @@ exports.Login = async (req, res, next) => {
           expires_in: json_body.expires_in,
           token_type: json_body.token_type,
           login_count: new_token.access_count,
+          user: {
+            id: user.id,
+            name: user.name,
+            email: user.email,
+            country_code: user.country_code,
+            phone: user.phone,
+            picture: user.picture
+          },
           status: 1
         });
 
