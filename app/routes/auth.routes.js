@@ -3,8 +3,6 @@ const cors = require('cors');
 const router = express.Router();
 const authController = require('../controllers/auth.controller');
 
-router.use(cors());
-
 router.post('/register', authController.Register);
 
 router.post('/login', authController.Login);
