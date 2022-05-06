@@ -89,7 +89,7 @@ exports.Register = (req, res, next) => {
  * Login controller.
 */
 exports.Login = async (req, res, next) => {
-
+  try {
   const email = req.body.email;
   const password = req.body.password;
 
@@ -97,7 +97,7 @@ exports.Login = async (req, res, next) => {
 
   // Check whether user is already exist or not.
   if (!user) {
-    return res.status(400).json({ message: 'User not exist!', status: 0 })
+    return res.status(404).json({ message: 'User not exist!', status: 0 })
   }
 
   var options = {
@@ -116,7 +116,7 @@ exports.Login = async (req, res, next) => {
   };
 
   // Make login request to third party Auth0 api.
-  try {
+  
 
     request(options, async (error, response, body) => {
       if (error) {
@@ -233,7 +233,7 @@ exports.Login = async (req, res, next) => {
  * Refresh token controller.
 */
 exports.refreshToken = (req, res, next) => {
-
+  try {
   var options = {
     method: 'POST',
     url: 'https://winner-yoga.us.auth0.com/oauth/token',
@@ -248,7 +248,7 @@ exports.refreshToken = (req, res, next) => {
   };
 
   // Make refresh token request to third party Auth0 api.
-  try {
+  
     request(options, function (error, response, body) {
       if (error) {
         console.log(error);
@@ -288,7 +288,7 @@ exports.refreshToken = (req, res, next) => {
  * Forgot password controller.
 */
 exports.forgotPassword = async (req, res, next) => {
-
+  try {
   const user = await User.findOne({ where: { email: req.body.email } });
 
   if (!user) {
@@ -310,7 +310,7 @@ exports.forgotPassword = async (req, res, next) => {
     }
   }
 
-  try {
+  
 
     // Make forgot_password request to third party Auth0 api.
     request(options, function (error, response, body) {
