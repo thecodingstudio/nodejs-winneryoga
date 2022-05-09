@@ -1,8 +1,6 @@
 const express = require('express');
 const bodyParser = require('body-parser');
-const multer = require('multer');
 const path = require('path');
-const { v4: uuidv4 } = require('uuid');
 require('dotenv').config();
 
 // Define express server amd port.
