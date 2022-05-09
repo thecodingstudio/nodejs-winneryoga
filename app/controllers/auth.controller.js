@@ -90,33 +90,33 @@ exports.Register = (req, res, next) => {
 */
 exports.Login = async (req, res, next) => {
   try {
-  const email = req.body.email;
-  const password = req.body.password;
+    const email = req.body.email;
+    const password = req.body.password;
 
-  const user = await User.findOne({ where: { email: email } });
+    const user = await User.findOne({ where: { email: email } });
 
-  // Check whether user is already exist or not.
-  if (!user) {
-    return res.status(404).json({ message: 'User not exist!', status: 0 })
-  }
-
-  var options = {
-    method: 'POST',
-    url: 'https://winner-yoga.us.auth0.com/oauth/token',
-    headers: { 'content-type': 'application/x-www-form-urlencoded' },
-    form: {
-      grant_type: 'password',
-      username: email,
-      password: password,
-      audience: process.env.AUDIENCE,
-      scope: 'offline_access',
-      client_id: process.env.CLIENT_ID,
-      client_secret: process.env.CLIENT_SECRET
+    // Check whether user is already exist or not.
+    if (!user) {
+      return res.status(404).json({ message: 'User not exist!', status: 0 })
     }
-  };
 
-  // Make login request to third party Auth0 api.
-  
+    var options = {
+      method: 'POST',
+      url: 'https://winner-yoga.us.auth0.com/oauth/token',
+      headers: { 'content-type': 'application/x-www-form-urlencoded' },
+      form: {
+        grant_type: 'password',
+        username: email,
+        password: password,
+        audience: process.env.AUDIENCE,
+        scope: 'offline_access',
+        client_id: process.env.CLIENT_ID,
+        client_secret: process.env.CLIENT_SECRET
+      }
+    };
+
+    // Make login request to third party Auth0 api.
+
 
     request(options, async (error, response, body) => {
       if (error) {
@@ -165,8 +165,7 @@ exports.Login = async (req, res, next) => {
                 name: user.name,
                 email: user.email,
                 country_code: user.country_code,
-                phone: user.phone,
-                picture: user.picture
+                phone: user.phone
               },
               status: 1
             });
@@ -205,10 +204,7 @@ exports.Login = async (req, res, next) => {
           user: {
             id: user.id,
             name: user.name,
-            email: user.email,
-            country_code: user.country_code,
-            phone: user.phone,
-            picture: user.picture
+            email: user.email
           },
           status: 1
         });
@@ -234,21 +230,21 @@ exports.Login = async (req, res, next) => {
 */
 exports.refreshToken = (req, res, next) => {
   try {
-  var options = {
-    method: 'POST',
-    url: 'https://winner-yoga.us.auth0.com/oauth/token',
-    headers: { 'content-type': 'application/x-www-form-urlencoded' },
-    form:
-    {
-      grant_type: 'refresh_token',
-      client_id: process.env.CLIENT_ID,
-      client_secret: process.env.CLIENT_SECRET,
-      refresh_token: req.body.refresh_token
-    }
-  };
+    var options = {
+      method: 'POST',
+      url: 'https://winner-yoga.us.auth0.com/oauth/token',
+      headers: { 'content-type': 'application/x-www-form-urlencoded' },
+      form:
+      {
+        grant_type: 'refresh_token',
+        client_id: process.env.CLIENT_ID,
+        client_secret: process.env.CLIENT_SECRET,
+        refresh_token: req.body.refresh_token
+      }
+    };
 
-  // Make refresh token request to third party Auth0 api.
-  
+    // Make refresh token request to third party Auth0 api.
+
     request(options, function (error, response, body) {
       if (error) {
         console.log(error);
@@ -289,28 +285,28 @@ exports.refreshToken = (req, res, next) => {
 */
 exports.forgotPassword = async (req, res, next) => {
   try {
-  const user = await User.findOne({ where: { email: req.body.email } });
+    const user = await User.findOne({ where: { email: req.body.email } });
 
-  if (!user) {
-    return res.status(404).json({
-      ErrorMessage: "Email dose not exist!",
-      status: 0
-    });
-  }
-
-  const options = {
-    method: 'POST',
-    url: 'https://winner-yoga.us.auth0.com/dbconnections/change_password',
-    headers: { 'content-type': 'application/json' },
-    form:
-    {
-      client_id: process.env.CLIENT_ID,
-      username: req.body.email,
-      connection: process.env.CONNECTION
+    if (!user) {
+      return res.status(404).json({
+        ErrorMessage: "Email dose not exist!",
+        status: 0
+      });
     }
-  }
 
-  
+    const options = {
+      method: 'POST',
+      url: 'https://winner-yoga.us.auth0.com/dbconnections/change_password',
+      headers: { 'content-type': 'application/json' },
+      form:
+      {
+        client_id: process.env.CLIENT_ID,
+        username: req.body.email,
+        connection: process.env.CONNECTION
+      }
+    }
+
+
 
     // Make forgot_password request to third party Auth0 api.
     request(options, function (error, response, body) {
@@ -337,5 +333,27 @@ exports.forgotPassword = async (req, res, next) => {
     error.statusCode = 422;
     throw error;
   }
+
+}
+
+/*
+ * Logout controller.
+*/
+exports.Logout = (req, res, next) => {
+
+  Token.findOne({ where: { userId: req.user_id } })
+    .then(async token => {
+      token.token = null;
+      token.token_type = null;
+      token.status = 'expired';
+      await token.save();
+      return res.status(200).json({ message: 'Logout successfully', status: 1 });
+    })
+    .catch(err => {
+      if (!err.statusCode) {
+        err.statusCode = 500;
+      }
+      next(err);
+    });
 
 }

@@ -63,7 +63,7 @@ app.get("/", (req, res) => {
 const User = require('./app/models/user');
 const Token = require('./app/models/token');
 
-Token.belongsTo(User, { constraints: true, onDelete: 'CASCADE' });
+Token.belongsTo(User);
 
 /*
  * Sync MySQL database.
