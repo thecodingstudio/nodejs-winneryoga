@@ -51,7 +51,11 @@ exports.Register = (req, res, next) => {
 
           // Check whether any logical error is occurd or not.
           json_body = JSON.parse(body);
-          if (json_body.statusCode === 400) {
+          console.log(json_body);
+          if (json_body.statusCode === 400 || json_body.error) {
+            if(!json_body.statusCode){
+              json_body.statusCode = 400;
+            }
             return next(json_body);
           }
 
