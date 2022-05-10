@@ -53,8 +53,11 @@ exports.Register = (req, res, next) => {
           json_body = JSON.parse(body);
           console.log(json_body);
           if (json_body.statusCode === 400 || json_body.error) {
+            if(json_body.message === 'Password is too weak'){
+              json_body.statusCode = 411;
+            }
             if(!json_body.statusCode){
-              json_body.statusCode = 400;
+              json_body.statusCode = 406;
             }
             return next(json_body);
           }
