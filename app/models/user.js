@@ -1,7 +1,7 @@
 const Sequelize = require('sequelize');
-const sequelize = require('../utils/database');
+const db = require('../utils/database');
 
-const User = sequelize.define('user' , {
+const User = db.sequelize.define('user' , {
     name: {
         type: Sequelize.STRING
     },

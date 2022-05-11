@@ -43,18 +43,20 @@ app.use(auth_route);
 
 // Central error handling middleware.
 app.use((error, req, res, next) => {
-    console.log(error);
     const statusCode = error.statusCode || 500;
-    const data = error.data;
+    const data = error.data || error.error_description || 'No data provied!';
     const ErrorMessage = error.message || error.error;
     const ErrorDesc = error.description || error.error_description;
-    res.status(statusCode).json({ ErrorMessage: ErrorMessage, ErrorDescription: ErrorDesc, data: data, status: 0 });
+    error = { ErrorMessage: ErrorMessage, ErrorDescription: ErrorDesc, data: data, status: 0 }
+    console.log(error);
+    res.status(statusCode).json(error);
 });
 
 // Difine simple route.
 app.get("/", (req, res) => {
     res.status(200).json({message : 'Welcome to Winner-Yoga webapp backend..'});
 });
+
 
 // Define models and it's relationship.
 const User = require('./app/models/user');
@@ -66,8 +68,8 @@ Token.belongsTo(User);
  * Sync MySQL database.
  * Live to on defined port.
  */
-const sequelize = require("./app/utils/database");
-sequelize
+const db = require("./app/utils/database");
+db.sequelize
     .sync({ force: false })
     .then(_database => {
         console.log('Database Connected Successfully.')

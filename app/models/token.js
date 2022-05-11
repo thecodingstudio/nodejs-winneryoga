@@ -1,8 +1,8 @@
 const Sequelize = require('sequelize');
 
-const sequelize = require('../utils/database');
+const db = require('../utils/database');
 
-const Token = sequelize.define('app_tokens', {
+const Token = db.sequelize.define('app_tokens', {
     token: {
         type: Sequelize.TEXT,
         allowNull: true,
