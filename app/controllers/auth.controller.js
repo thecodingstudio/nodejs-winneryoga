@@ -53,10 +53,10 @@ exports.Register = (req, res, next) => {
           json_body = JSON.parse(body);
           console.log(json_body);
           if (json_body.statusCode === 400 || json_body.error) {
-            if(json_body.message === 'Password is too weak'){
+            if (json_body.message === 'Password is too weak') {
               json_body.statusCode = 411;
             }
-            if(!json_body.statusCode){
+            if (!json_body.statusCode) {
               json_body.statusCode = 406;
             }
             return next(json_body);
@@ -355,6 +355,49 @@ exports.Logout = (req, res, next) => {
       token.status = 'expired';
       await token.save();
       return res.status(200).json({ message: 'Logout successfully', status: 1 });
+    })
+    .catch(err => {
+      if (!err.statusCode) {
+        err.statusCode = 500;
+      }
+      next(err);
+    });
+
+}
+
+/*
+ * Change password through current password.
+*/
+exports.changePassword = (req, res, next) => {
+
+  // Find user who send request.
+  User.findOne({ where: { id: req.user_id } })
+    .then(async user => {
+
+      // Cheak Whether user exist or not.
+      if (!user) {
+        const error = new Error('User not exists!');
+        error.statusCode = 404;
+        throw error;
+      }
+
+      // Check whether password macth or not.
+      const isEqual = await bcrypt.compare(req.body.currentPassword, user.password);
+      if (!isEqual) {
+        const error = new Error('Invalid Password');
+        error.statusCode = 401;
+        throw error;
+      }
+
+      // Crete new password and encrypt it.
+      const new_password = await bcrypt.hash(req.body.newPassword, 10);
+      user.password = new_password;
+
+      // Save updated password in database.
+      await user.save();
+
+      return res.status(200).json({ message: 'Password changed successfully..', status: 1 })
+
     })
     .catch(err => {
       if (!err.statusCode) {

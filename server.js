@@ -8,6 +8,7 @@ const PORT = process.env.PORT || 8000;
 
 // Importing routes.
 const auth_route = require('./app/routes/auth.routes');
+const user_route = require('./app/routes/user.routes');
 
 // Multer setup.
 // const storage = multer.diskStorage({
@@ -40,6 +41,7 @@ app.use((req, res, next) => {
 
 // Difine API routes.
 app.use(auth_route);
+app.use(user_route);
 
 // Central error handling middleware.
 app.use((error, req, res, next) => {
@@ -61,8 +63,10 @@ app.get("/", (req, res) => {
 // Define models and it's relationship.
 const User = require('./app/models/user');
 const Token = require('./app/models/token');
+const Address = require('./app/models/address');
 
 Token.belongsTo(User);
+Address.belongsTo(User, { constraints: true, onDelete: 'CASCADE' });
 
 /*
  * Sync MySQL database.
