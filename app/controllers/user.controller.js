@@ -2,6 +2,19 @@ const User = require('../models/user');
 const Address = require('../models/address');
 
 /*
+ * Function for select address to defualt address.
+*/
+async function is_select(is_select,user_id) {
+    if (is_select === 1) {
+        const address = await Address.findOne({ where: { userId: user_id, is_select: 1 } });
+        if (address) {
+            address.is_select = 0;
+            await address.save();
+        }
+    }
+}
+
+/*
  * Get profile for every user.
 */
 exports.getProfile = (req, res, next) => {
@@ -78,12 +91,15 @@ exports.postAddress = async (req, res, next) => {
 
     // Create new address in database.
     try {
-        const payload = { ...req.body };
+        const payload = { ...req.body , userId : req.user_id};
+
+        is_select(req.body.is_select, req.user_id);
+
         const address = await Address.create(payload);
 
         return res.status(200).json({
             message: 'Address added successfully',
-            address: { id: address.id, company: address.company, address: address.address, address_complement: address.address_complement, city: address.city, state: address.state, zip_code: address.zip_code, conutry: address.conutry },
+            address: { id: address.id, company: address.company, address: address.address, address_complement: address.address_complement, city: address.city, state: address.state, zip_code: address.zip_code, conutry: address.conutry, is_select: address.is_select },
             status: 1
         });
 
@@ -124,6 +140,8 @@ exports.updateAddress = (req, res, next) => {
                 address.latitude = req.body.latitude || address.latitude;
                 address.longitude = req.body.longitude || address.longitude;
                 address.is_select = req.body.is_select || address.is_select;
+
+                is_select(req.body.is_select, req.user_id);
 
                 // save updated address.
                 await address.save();

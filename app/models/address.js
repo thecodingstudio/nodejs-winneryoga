@@ -31,6 +31,10 @@ const Address = db.sequelize.define('address', {
         type: Sequelize.STRING(25),
         allowNull: false
     },
+    is_select : {
+        type: Sequelize.TINYINT(1),
+        defaultValue: 0
+    },
     is_test: {
         type: Sequelize.TINYINT(1),
         defaultValue: 1
