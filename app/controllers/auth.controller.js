@@ -61,6 +61,13 @@ exports.Register = (req, res, next) => {
             }
             return next(json_body);
           }
+          try {
+            const user = await User.findByPk(json_body.id);
+            user.role = req.body.role;
+            await user.save();
+          } catch (error) {
+            return res.status(400).json({ ERROR_MESSAGE: 'Database error!', status: 0 })
+          }
 
           // Send success responce.
           return res.status(200).json({

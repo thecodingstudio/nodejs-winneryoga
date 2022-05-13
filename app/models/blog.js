@@ -1,33 +1,22 @@
 const Sequelize = require('sequelize');
 const db = require('../utils/database');
 
-const User = db.sequelize.define('user', {
-    role: {
-        type: Sequelize.TINYINT(1),
-        defaultValue: 1,
-        allowNull: false,
-        comment: '0 = admin, 1 = customer, 2 = seller'
-    },
-    name: {
+const Blog = db.sequelize.define('blog', {
+    title: {
         type: Sequelize.STRING
     },
-    email: {
-        type: Sequelize.STRING,
+    description: {
+        type: Sequelize.TEXT
+    },
+    image: {
+        type: Sequelize.TEXT,
         allowNull: false
     },
-    password: {
-        type: Sequelize.STRING,
+    creator_name: {
+        type: Sequelize.STRING(20),
         allowNull: false
     },
     is_test: {
-        type: Sequelize.TINYINT(1),
-        defaultValue: 1
-    },
-    is_verify: {
-        type: Sequelize.TINYINT(1),
-        defaultValue: 1
-    },
-    is_active: {
         type: Sequelize.TINYINT(1),
         defaultValue: 1
     },
@@ -43,4 +32,4 @@ const User = db.sequelize.define('user', {
     }
 });
 
-module.exports = User;
+module.exports = Blog;

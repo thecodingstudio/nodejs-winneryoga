@@ -14,4 +14,10 @@ router.post('/add-child-sub-category', storeController.postChildSubCategory);
 
 router.post('/add-item', storeController.postItem);
 
+router.post('/add-banner', storeController.postBanner);
+
+router.post('/add-poster', storeController.postPoster);
+
+router.post('/create-blog', storeController.postBlog);
+
 module.exports = router;

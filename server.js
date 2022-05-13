@@ -53,13 +53,12 @@ app.use('/customer', customer_route);
 // Central error handling middleware.
 app.use((error, req, res, next) => {
     const statusCode = error.statusCode || 500;
-    const ERROR_DATA = error.data || 'No data provieded!';
-    const ERROR_MESSAGE = error.message || error.error || 'Somethig went Wrong!';
-    const ERROR_DESCRIPTION = error.description || error.error_description || 'No description provieded!';
+    const ERROR_DATA = error.data || 'No data provided!';
+    const ERROR_MESSAGE = error.message || error.error || 'Something went Wrong!';
+    const ERROR_DESCRIPTION = error.description || error.error_description || 'No description provided!';
     error = { ERROR_MESSAGE: ERROR_MESSAGE, ERROR_DESCRIPTION: ERROR_DESCRIPTION, ERROR_DATA: ERROR_DATA, status: 0 }
     console.log(error);
     res.status(statusCode).json(error);
-    next();
 });
 
 // Difine simple route.
@@ -79,7 +78,8 @@ const Item = require('./app/models/item');
 const Item_size = require('./app/models/item_size');
 const Item_color = require('./app/models/item_color');
 const Item_image = require('./app/models/item_image');
-
+const Banner = require('./app/models/banner');
+const Poster = require('./app/models/poster');
 
 Token.belongsTo(User);
 Address.belongsTo(User, { constraints: true, onDelete: 'CASCADE' });
@@ -89,6 +89,8 @@ Child_sub_category.belongsTo(Sub_category, { constraints: true, onDelete: 'CASCA
 Sub_category.hasMany(Child_sub_category);
 Item.belongsTo(Child_sub_category, { constraints: true, onDelete: 'CASCADE' });
 Child_sub_category.hasMany(Item);
+Banner.belongsTo(Child_sub_category, { constraints: true, onDelete: 'CASCADE' })
+Child_sub_category.hasOne(Banner);
 Item.belongsTo(Sub_category, { constraints: true, onDelete: 'CASCADE' });
 Sub_category.hasMany(Item);
 Item.belongsTo(Category, { constraints: true, onDelete: 'CASCADE' });
@@ -96,9 +98,13 @@ Category.hasMany(Item);
 Item_image.belongsTo(Item, { constraints: true, onDelete: 'CASCADE' });
 Item_size.belongsTo(Item, { constraints: true, onDelete: 'CASCADE' });
 Item_color.belongsTo(Item, { constraints: true, onDelete: 'CASCADE' })
-Item.hasMany(Item_image );
+Item.hasMany(Item_image);
 Item.hasMany(Item_size);
-Item.hasMany(Item_color );
+Item.hasMany(Item_color);
+Item.belongsTo(User, { constraints: true, onDelete: 'CASCADE' });
+User.hasMany(Item);
+Poster.belongsTo(Item, { constraints: true, onDelete: 'CASCADE' })
+Item.hasOne(Poster);
 
 /*
  * Sync MySQL database.
