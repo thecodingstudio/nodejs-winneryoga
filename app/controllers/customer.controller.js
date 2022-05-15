@@ -8,6 +8,7 @@ const Item_image = require('../models/item_image');
 const Banner = require('../models/banner');
 const Blog = require('../models/blog');
 const Poster = require('../models/poster');
+const { Op } = require('sequelize')
 
 exports.getHomepage = async (req, res, next) => {
     try {
@@ -208,6 +209,55 @@ exports.getItem = async (req, res, next) => {
     }
 }
 
+getSize = async (condition) => {
+    const size = await Item_size.findAll({
+        where: {
+            size: condition
+        },
+        attributes: ['itemId']
+    });
+    return size;
+}
+
+getColor = async (condition) => {
+    const color = await Item_color.findAll({
+        where: {
+            color: condition
+        },
+        attributes: ['itemId']
+    });
+    return color;
+}
+
 exports.getFilterItem = async (req, res, next) => {
-    const sizes = await Item_size.findAll({ attributes: ['size'] });
+    let size, color;
+    let query = req.query.size
+    if (!query) {
+        query = [];
+    }
+
+    typeof req.query.size === 'string' ? size = await getSize(query) : size = await getSize({ [Op.or]: query });
+    typeof req.query.color === 'string' ? color = await getColor(req.query.color) : color = await getColor({ [Op.or]: req.query.color });
+
+    const item_size = size.map(element => element.itemId);
+    const item_color = color.map(element => element.itemId);
+    // const item_size_color = item_size.concat(item_color);
+    console.log(req.query.size);
+    console.log(item_size);
+    // console.log(item_size_color);
+
+    const item_id = [...new Set(color.map(element => element.itemId))];
+    // console.log(item_id);
+    if (item_id.length === 0) {
+        return res.json({ message: 'No item found!' });
+    }
+    const item = await Item.findAll({
+        where: {
+            id: { [Op.or]: item_id }
+        },
+        attributes: ['name']
+    })
+    res.json({ item });
+
+
 }

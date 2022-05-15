@@ -14,4 +14,6 @@ router.get('/get-blog', customerController.getBlog);
 
 router.get('/get-item', customerController.getItem);
 
+router.get('/test', customerController.getFilterItem);
+
 module.exports = router;
