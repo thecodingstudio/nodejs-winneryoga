@@ -155,7 +155,10 @@ exports.getBlog = async (req, res, next) => {
 
 }
 
-getItem = async (condition, currentPage, perPage) => {
+getItem = async (condition, page) => {
+    const currentPage = page || 1;
+    const perPage = 9;
+
     const items = await Item.findAll({
         where: condition,
         offset: (currentPage - 1) * perPage,
@@ -179,23 +182,22 @@ getItem = async (condition, currentPage, perPage) => {
 
 exports.getItem = async (req, res, next) => {
     try {
-        const currentPage = req.query.page || 1;
-        const perPage = 9;
+
         let items;
 
         if (req.query.childSubCategoryId) {
             const condition = { childSubCategoryId: req.query.childSubCategoryId };
-            items = await getItem(condition, currentPage, perPage);
+            items = await getItem(condition, req.query.page);
         }
 
         if (req.query.subCategoryId) {
             const condition = { subCategoryId: req.query.subCategoryId };
-            items = await getItem(condition, currentPage, perPage);
+            items = await getItem(condition, req.query.page);
         }
 
         if (req.query.categoryId) {
             const condition = { categoryId: req.query.categoryId };
-            items = await getItem(condition, currentPage, perPage);
+            items = await getItem(condition, req.query.page);
         }
 
         if (items.items.length === 0) {
@@ -230,34 +232,37 @@ getColor = async (condition) => {
 }
 
 exports.getFilterItem = async (req, res, next) => {
-    let size, color;
-    let query = req.query.size
-    if (!query) {
-        query = [];
+    try {
+        let size, color, item_size, item_color;
+
+        if (req.query.size) {
+            typeof req.query.size === 'string' ? size = await getSize(req.query.size) : size = await getSize({ [Op.or]: req.query.size });
+            item_size = size.map(element => element.itemId);
+        } else {
+            item_size = [];
+        }
+        if (req.query.color) {
+            typeof req.query.color === 'string' ? color = await getColor(req.query.color) : color = await getColor({ [Op.or]: req.query.color });
+            item_color = color.map(element => element.itemId);
+        } else {
+            item_color = [];
+        }
+
+        const item_size_color = item_size.concat(item_color);
+        const item_id = [...new Set(item_size_color)];
+
+        if (item_id.length === 0) {
+            return res.status(404).json({ message: 'No item found!', status: 0 });
+        }
+
+        const items = await getItem({ id: { [Op.or]: item_id } }, req.query.page);
+        if (items.items.length === 0) {
+            return res.status(404).json({ messsage: 'No more product found!', status: 0 });
+        }
+        return res.status(200).json({ message: 'Filter applied successfully', items: items.items, hasMore: items.hasMore, total_count: items.total_count, status: 0 });
+
+    } catch (error) {
+        next(error)
     }
-
-    typeof req.query.size === 'string' ? size = await getSize(query) : size = await getSize({ [Op.or]: query });
-    typeof req.query.color === 'string' ? color = await getColor(req.query.color) : color = await getColor({ [Op.or]: req.query.color });
-
-    const item_size = size.map(element => element.itemId);
-    const item_color = color.map(element => element.itemId);
-    // const item_size_color = item_size.concat(item_color);
-    console.log(req.query.size);
-    console.log(item_size);
-    // console.log(item_size_color);
-
-    const item_id = [...new Set(color.map(element => element.itemId))];
-    // console.log(item_id);
-    if (item_id.length === 0) {
-        return res.json({ message: 'No item found!' });
-    }
-    const item = await Item.findAll({
-        where: {
-            id: { [Op.or]: item_id }
-        },
-        attributes: ['name']
-    })
-    res.json({ item });
-
 
 }
