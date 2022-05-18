@@ -12,6 +12,10 @@ const Poster = db.sequelize.define('poster' , {
         type: Sequelize.TEXT,
         allowNull: false
     },
+    is_poster : {
+        type: Sequelize.TINYINT(1),
+        defaultValue: 0
+    },
     is_test: {
         type: Sequelize.TINYINT(1),
         defaultValue: 1
