@@ -168,8 +168,8 @@ exports.postBanner = async (req, res, next) => {
 
             const image = await cloudinary.uploader.upload(req.files[i].path, {
                 public_id: req.files[i].filename,
-                width: 500,
-                height: 500,
+                width: 1920,
+                height: 600,
                 crop: 'fill',
             });
 
@@ -215,8 +215,8 @@ exports.postPoster = async (req, res, next) => {
 
             const image = await cloudinary.uploader.upload(req.files[i].path, {
                 public_id: req.files[i].filename,
-                width: 500,
-                height: 500,
+                width: 570,
+                height: 570,
                 crop: 'fill',
             });
 
