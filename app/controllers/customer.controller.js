@@ -133,7 +133,7 @@ exports.getFeatured = async (req, res, next) => {
 
 exports.getBlog = async (req, res, next) => {
     const currentPage = req.query.page || 1;
-    const perPage = 3;
+    const perPage = 4;
 
 
     Blog.findAll({

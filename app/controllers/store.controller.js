@@ -192,7 +192,7 @@ exports.postBlog = async (req, res, next) => {
             const image = await cloudinary.uploader.upload(req.files[i].path, {
                 public_id: req.files[i].filename,
                 width: 400,
-                height: 400,
+                height: 250,
                 crop: 'fill',
             });
 
