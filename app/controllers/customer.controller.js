@@ -98,7 +98,7 @@ exports.getHomepage = async (req, res, next) => {
 
 exports.getFeatured = async (req, res, next) => {
     const currentPage = req.query.page || 1;
-    const perPage = 1;
+    const perPage = 8;
 
     Item.findAll({
         offset: (currentPage - 1) * perPage,
@@ -133,7 +133,7 @@ exports.getFeatured = async (req, res, next) => {
 
 exports.getBlog = async (req, res, next) => {
     const currentPage = req.query.page || 1;
-    const perPage = 1;
+    const perPage = 3;
 
 
     Blog.findAll({
